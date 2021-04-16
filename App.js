@@ -26,7 +26,8 @@ const IconBar = styled.View`
 export default class App extends React.Component {
   state = {
     hasPermission: null,
-    cameraType: Camera.Constants.Type.front
+    cameraType: Camera.Constants.Type.front,
+    smileDetected: false
   };
   componentDidMount = async() => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -38,7 +39,7 @@ export default class App extends React.Component {
     
   };
   render() {
-    const { hasPermission, cameraType } = this.state;
+    const { hasPermission, cameraType, smileDetected } = this.state;
     if (hasPermission === true) {
       return (
         <CenterView>
@@ -49,7 +50,12 @@ export default class App extends React.Component {
               borderRadius: 10,
               overflow: "hidden"
               }}
-              type={cameraType} 
+              type={cameraType}
+              onFacesDetected={smileDetected ? null : this.onFacesDetected}
+              faceDetectionClassifications={{   
+                detectLandmarks: FaceDetector.Constants.Landmarks.all,
+                runClassifications: FaceDetector.Constants.Classifications.all
+              }} 
             />
             <IconBar>
               <TouchableOpacity onPress={this.switchCameraType}>
@@ -92,4 +98,17 @@ export default class App extends React.Component {
       });
     }
   };
+
+
+onFacesDetected = ({ faces }) => {
+  const face = faces[0];
+  if (face) {
+    if (face.smilingProbability > 0.7 ) {
+      this.setState({
+        smileDetected: true
+      });
+      console.log("take photo");
+    }
+  }
+};
 }
