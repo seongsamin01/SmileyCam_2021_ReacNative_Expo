@@ -138,21 +138,21 @@ takePhoto = async () => {
 savePhoto = async uri => {
   try {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if (status === "granted" ) {
+    if (status === "granted") {
       const asset = await MediaLibrary.createAssetAsync(uri);
       let album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
-      if(album === null) {
-        album = await MediaLibrary.createAlbumAsync(
-          } else {
-          await MediaLibrary.addAssetsToAlbumAsync([asset], album.id);
-    }
-    setTimeout(
-      () =>
-      this.setState({
-        smileDetected: false
-      }),
-      2000
-    );
+      if (album === null) {
+        album = await MediaLibrary.createAlbumAsync(ALBUM_NAME, asset);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album.id);
+      }
+      setTimeout(
+        () =>
+          this.setState({
+            smileDetected: false
+          }),
+        2000
+      );
     } else {
       this.setState({ hasPermission: false });
     }
